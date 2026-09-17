@@ -221,6 +221,9 @@ body{
 .travel-group{display:none}
 .travel-group.on{display:block;animation:fadeIn .45s var(--ease)}
 
+.perleng-group{display:none}
+.perleng-group.on{display:block;animation:fadeIn .45s var(--ease)}
+
 /* date segmented */
 .days{
   position:relative;
@@ -334,7 +337,7 @@ body{
   background:var(--lime);border-radius:12px;
   padding:12px 10px 12px 14px;
   display:flex;align-items:center;gap:10px;
-  margin-bottom:8px;
+  margin-bottom:12px;
 }
 .row:last-child{margin-bottom:0}
 .row-name{flex:1;font-size:17px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
@@ -378,7 +381,7 @@ body{
   background:var(--lime);border-radius:12px;
   padding:14px;
   display:flex;align-items:flex-end;justify-content:space-between;gap:10px;
-  margin-bottom:10px;
+  margin-bottom:12px;
 }
 .asesor-row:last-child{margin-bottom:0}
 .asesor-text{flex:1;min-width:0}
@@ -813,7 +816,14 @@ body{
   <!-- ============ PANEL: PERLENGKAPAN PESERTA ============ -->
   <section class="panel" id="panel-perlengkapan" role="tabpanel">
 
-    <div class="group reveal">
+    <nav class="seg subseg reveal" id="perlengSeg" role="tablist" aria-label="Kategori perlengkapan">
+      <div class="seg-pill" id="perlengSegPill"></div>
+      <button class="on" role="tab" aria-selected="true" data-perleng="atk">Alat Tulis Kantor</button>
+      <button role="tab" aria-selected="false" data-perleng="lainnya">Perlengkapan Lainnya</button>
+      <button role="tab" aria-selected="false" data-perleng="asesi">Asesi</button>
+    </nav>
+
+    <div class="group perleng-group on" id="perleng-atk">
       <div class="group-head"><h2>Alat Tulis Kantor (ATK)</h2>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 508.09 440.68">
   <g>
@@ -830,7 +840,7 @@ body{
       <div class="row"><div class="row-name">Buku/Catatan</div></div>
     </div>
 
-    <div class="group reveal">
+    <div class="group perleng-group" id="perleng-lainnya">
       <div class="group-head"><h2>Perlengkapan Lainnya</h2>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 508.09 440.68">
   <path fill="currentColor" d="M444.02,317.58v25.45c-.71.36-.87.4-1.59,1.76-2.43,4.57-7.67,10.88-14.32,10.88l-351.45.12c-8.18-1.68-13.77-7.19-15.94-15.04l.03-20.13c0-.53-.45-.84-.74-.79v-1.5c.61-.32,1.06-.75,2.46-.75h381.54ZM281.52,336.27c1.67,0,4.45-.98,5.36-2.08,2.62-3.18,2.46-7.34,2.01-11.36h-73.04c-1.11,6.98,1.23,13.36,6.82,13.37l58.85.08Z"/>
@@ -841,7 +851,7 @@ body{
       <div class="row"><div class="row-name">Charger Laptop</div></div>
     </div>
 
-    <div class="group reveal">
+    <div class="group perleng-group" id="perleng-asesi">
       <div class="group-head"><h2>Asesi</h2>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
   <circle cx="12" cy="8" r="4" fill="currentColor"/>
@@ -1036,11 +1046,17 @@ const refreshSeg = segment('seg','segPill', btn => {
   document.getElementById('panel-' + btn.dataset.panel).classList.add('on');
   if(btn.dataset.panel === 'agenda') refreshDays();
   if(btn.dataset.panel === 'travel') refreshTravelSeg();
+  if(btn.dataset.panel === 'perlengkapan') refreshPerlengSeg();
 });
 
 const refreshTravelSeg = segment('travelSeg','travelSegPill', btn => {
   document.querySelectorAll('.travel-group').forEach(g => g.classList.remove('on'));
   document.getElementById('travel-' + btn.dataset.travel).classList.add('on');
+});
+
+const refreshPerlengSeg = segment('perlengSeg','perlengSegPill', btn => {
+  document.querySelectorAll('.perleng-group').forEach(g => g.classList.remove('on'));
+  document.getElementById('perleng-' + btn.dataset.perleng).classList.add('on');
 });
 
 /* ============ 3. AGENDA ============ */
