@@ -552,6 +552,30 @@ body{
   .row{margin-bottom:0}
   .row-name{font-size:16.5px}
 
+  /* --- Opsi Perjalanan & Perlengkapan Peserta: sembunyikan tab kategori,
+     tampilkan semua kartu berurutan satu kolom (seperti tampilan mobile) --- */
+  #panel-travel .subseg,
+  #panel-perlengkapan .subseg{
+    display:none;
+  }
+  .travel-group.group,
+  .perleng-group.group{
+    display:block;
+    padding:18px 20px;
+  }
+  .travel-group.group .row,
+  .perleng-group.group .row{
+    margin-bottom:12px;
+  }
+  .travel-group.group .row:last-child,
+  .perleng-group.group .row:last-child{
+    margin-bottom:0;
+  }
+  .travel-group.group .group-head,
+  .perleng-group.group .group-head{
+    padding:2px 6px 14px;
+  }
+
   /* --- Kartu Master Asesor: rapikan proporsi nama, kode & avatar --- */
   .asesor-row{
     margin-bottom:0;
