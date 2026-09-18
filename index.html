@@ -303,7 +303,41 @@ body{
 .slot.a .slot-more,.slot.a .slot-more summary,.slot.a .slot-more-text{color:var(--forest)}
 .slot.b .slot-more,.slot.b .slot-more summary,.slot.b .slot-more-text{color:var(--lime)}
 .task-box{margin-top:14px;padding-right:92px}
-.task-label{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;opacity:.7;margin-bottom:7px}
+.task-label-row{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-bottom:7px}
+.task-label{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;opacity:.7}
+.deadline-badge-wrap{position:relative}
+.deadline-badge-wrap summary{
+  list-style:none;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--red);color:#fff;
+  font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+  padding:5px 11px 5px 13px;border-radius:999px;
+}
+.deadline-badge-wrap summary::-webkit-details-marker{display:none}
+.deadline-badge-wrap summary::marker{content:''}
+.deadline-i{
+  width:14px;height:14px;border-radius:50%;flex:none;
+  background:rgba(255,255,255,.3);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:9.5px;font-style:italic;font-weight:800;
+  font-family:Georgia,'Times New Roman',serif;
+}
+.deadline-tip{
+  margin-top:10px;
+  background:#fdecec;
+  border-left:4px solid var(--red);
+  border-radius:12px;
+  padding:14px 16px;
+  max-width:none;
+  animation:deadlinePop .4s var(--ease);
+}
+.deadline-tip b{display:block;font-size:13px;font-weight:800;color:#7a1712;margin-bottom:4px}
+.deadline-tip span{display:block;font-size:12.5px;font-weight:500;line-height:1.55;color:#9a5651}
+@keyframes deadlinePop{
+  0%{opacity:0;transform:translateY(-8px) scale(.96)}
+  60%{opacity:1;transform:translateY(1px) scale(1.01)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
 .task-links{display:flex;flex-wrap:wrap;gap:8px}
 .task-link{
   display:inline-flex;align-items:center;gap:6px;
@@ -1161,6 +1195,7 @@ const SCHEDULE = {
   '2026-09-20':[
     {title:'Internalisasi Calon Asesor', start:'08:00', end:'13:00',
      desc:'Internalisasi Calon Asesor wajib bagi peserta yang belum memiliki Sertifikat Kompetensi BNSP.',
+     deadline:'Sabtu, 19 September 2026 pukul 08.00',
      links:[
        {label:'Tugas Internalisasi', url:'https://drive.google.com/drive/folders/1flQvGZ3sbuE_TeFo24e9bTBk6UeAeYQX?usp=sharing', icon:'doc'},
        {label:'Pengumpulan Tugas', url:'https://drive.google.com/drive/folders/1flQvGZ3sbuE_TeFo24e9bTBk6UeAeYQX?usp=sharing', icon:'upload'}
@@ -1271,7 +1306,16 @@ function buildAgenda(){
           <p class="slot-more-text">${it.desc}</p>
         </details>` : ''}
         ${it.links ? `<div class="task-box">
-          <div class="task-label">Tugas</div>
+          <div class="task-label-row">
+            <div class="task-label">Tugas</div>
+            ${it.deadline ? `<details class="deadline-badge-wrap">
+              <summary>Deadline<span class="deadline-i">i</span></summary>
+              <div class="deadline-tip">
+                <b>Deadline Pengumpulan</b>
+                <span>${it.deadline}</span>
+              </div>
+            </details>` : ''}
+          </div>
           <div class="task-links">
             ${it.links.map(l => `<a class="task-link" href="${l.url}" target="_blank" rel="noopener">
               ${l.icon === 'upload'
