@@ -380,6 +380,21 @@ body{
 }
 .mini-cd-label{color:var(--lime);font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
 .mini-cd-time{color:#fff;font-size:21px;font-weight:800;margin-top:9px;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.btn-zoom{
+  display:none;
+  align-items:center;justify-content:center;gap:8px;
+  width:100%;
+  margin-top:14px;
+  background:var(--lime);color:var(--forest);
+  font-size:14.5px;font-weight:800;
+  padding:12px 16px;border-radius:12px;
+  text-decoration:none;
+  animation:zoomPulse 1.8s ease-in-out infinite;
+}
+.btn-zoom.show{display:inline-flex}
+.btn-zoom:active{transform:scale(.96)}
+.btn-zoom svg{width:18px;height:18px;flex:none}
+@keyframes zoomPulse{0%,100%{box-shadow:0 0 0 0 rgba(217,224,33,.55)}50%{box-shadow:0 0 0 8px rgba(217,224,33,0)}}
 
 /* ---------- travel ---------- */
 .group{background:var(--forest);border-radius:var(--radius-md);padding:14px;margin-top:14px}
@@ -1332,6 +1347,10 @@ function buildAgenda(){
     html += `<div class="mini-cd reveal">
       <div class="mini-cd-label">Countdown Internalisasi Calon Asesor</div>
       <div class="mini-cd-time" id="miniCdTime">00 Hari 00 Jam 00 Menit 00 Detik</div>
+      <a class="btn-zoom" id="miniCdZoomBtn" href="https://us06web.zoom.us/j/85787206304?pwd=Bga8SAtYVap2JEGQxe2FEQna2NOfbe.1" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3z"/></svg>
+        Join Zoom Sekarang
+      </a>
     </div>`;
   }
   agendaEl.innerHTML = html;
@@ -1356,10 +1375,13 @@ setInterval(updateAgendaStatuses, 15000); // status diperbarui otomatis, tanpa m
 
 // ---- Countdown khusus Minggu, 20 September (Internalisasi Calon Asesor) ----
 const TARGET_INTERNALISASI = new Date('2026-09-20T08:00:00+07:00').getTime();
+const ZOOM_JOIN_WINDOW_MS = 30 * 60 * 1000; // tombol muncul 30 menit sebelum mulai
 function updateMiniCountdown(){
   const el = document.getElementById('miniCdTime');
+  const zoomBtn = document.getElementById('miniCdZoomBtn');
   if(!el) return;
   const diff = TARGET_INTERNALISASI - Date.now();
+  if(zoomBtn) zoomBtn.classList.toggle('show', diff <= ZOOM_JOIN_WINDOW_MS);
   if(diff <= 0){ el.textContent = 'Sudah dimulai'; return; }
   const s = Math.floor(diff/1000);
   const d = Math.floor(s/86400), h = Math.floor(s%86400/3600),
