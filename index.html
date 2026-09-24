@@ -700,35 +700,20 @@ body{
 .modal-action-btn svg{width:26px;height:26px;flex:none}
 
 
-/* ---------- POPUP API ---------- */
-.fire-card{
-  overflow:hidden;
-  background:radial-gradient(120% 70% at 50% 108%,#ff5a00 0%,#a81d00 30%,#3a0800 62%,#160300 100%);
-  padding:64px 22px 56px;min-height:340px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  box-shadow:0 0 0 2px rgba(255,120,0,.55),0 0 46px rgba(255,90,0,.55),0 24px 60px rgba(0,0,0,.5);
-}
-#fireCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
-.fire-card .modal-close{z-index:3;background:rgba(255,255,255,.14);color:#ffd35c}
+/* ---------- POPUP MINIMALIS ---------- */
+.fire-card{padding:56px 28px 44px;text-align:center}
 .fire-text{
-  position:relative;z-index:2;
-  font-size:clamp(28px,8.6vw,38px);font-weight:900;line-height:1.1;letter-spacing:-.02em;text-transform:uppercase;
-  background:linear-gradient(0deg,#ff2a00 0%,#ff7a00 30%,#ffc21a 62%,#fff3a0 100%);
-  background-size:100% 220%;
-  -webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;color:transparent;
-  animation:fireShift 1.6s ease-in-out infinite alternate,fireFlicker .18s steps(2,end) infinite;
+  margin:0;font-size:clamp(20px,5.6vw,24px);font-weight:800;line-height:1.3;
+  letter-spacing:-.01em;color:var(--forest);
 }
-.fire-text .fe{
-  display:inline-block;-webkit-text-fill-color:initial;
-  animation:fireEmoji .9s ease-in-out infinite alternate;
+.fire-text .fe{display:inline-block;margin-left:2px}
+.fire-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:22px;
+  padding:13px 22px;border-radius:999px;background:var(--forest);color:var(--lime);
+  font-size:14px;font-weight:800;text-decoration:none;
 }
-@keyframes fireShift{from{background-position:0 0}to{background-position:0 100%}}
-@keyframes fireFlicker{
-  0%{filter:drop-shadow(0 0 6px #ff6a00) drop-shadow(0 -3px 12px #ff3c00)}
-  100%{filter:drop-shadow(0 0 12px #ffa200) drop-shadow(0 -6px 20px #ff5a00)}
-}
-@keyframes fireEmoji{from{transform:scale(1) rotate(-6deg)}to{transform:scale(1.25) rotate(6deg)}}
+.fire-btn svg{width:18px;height:18px}
+.fire-btn:focus-visible{outline:2px solid var(--forest);outline-offset:3px}
 
 /* ---------- SCROLL REVEAL ---------- */
 .reveal{
@@ -865,11 +850,14 @@ body{
 
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-card fire-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <canvas id="fireCanvas" aria-hidden="true"></canvas>
     <button class="modal-close" id="modalClose" aria-label="Tutup">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
     </button>
-    <h2 id="modalTitle" class="fire-text">SEMANGAT MENGERJAKAN TUGAS DAN REVISIIII <span class="fe">🔥</span></h2>
+    <h2 id="modalTitle" class="fire-text">SEMANGAT UNTUK HARI TERAKHIR PELATIHAN <span class="fe">🔥</span></h2>
+    <a class="fire-btn" href="https://drive.google.com/drive/folders/141nsDpeNaRVP3VKWC1S-Lx2bCxxB31l9?usp=sharing" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>
+      Unduh Dokumentasi
+    </a>
   </div>
 </div>
 
@@ -1226,59 +1214,6 @@ observeReveals(); // elemen statis (tabs, groups, kontak, footer)
 
 function pad(n){ return String(Math.max(0,n)).padStart(2,'0'); }
 
-/* ============ 1. EFEK API (popup) ============ */
-const Fire = (function(){
-  const cv = document.getElementById('fireCanvas'), ctx = cv.getContext('2d');
-  const card = cv.parentElement;
-  const still = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-  let W=0,H=0,ps=[],raf=0;
-  function size(){
-    const d = Math.min(window.devicePixelRatio||1,2);
-    W = card.clientWidth; H = card.clientHeight;
-    cv.width = W*d; cv.height = H*d; ctx.setTransform(d,0,0,d,0,0);
-  }
-  const rnd = (a,b) => a + Math.random()*(b-a);
-  function flame(){ return {x:rnd(-10,W+10),y:H+8,vx:rnd(-.5,.5),vy:-rnd(1.4,3.4),r:rnd(14,34),life:rnd(50,95),t:0,h:0}; }
-  function heart(){ return {x:rnd(12,W-12),y:H+10,vx:0,vy:-rnd(.7,1.7),r:rnd(7,16),life:rnd(150,250),t:0,h:1,ph:rnd(0,6.3),hue:rnd(0,50)}; }
-  function drawHeart(x,y,s){
-    ctx.beginPath();
-    ctx.moveTo(x,y+s*.3);
-    ctx.bezierCurveTo(x-s*.9,y-s*.3,x-s*.4,y-s*.95,x,y-s*.35);
-    ctx.bezierCurveTo(x+s*.4,y-s*.95,x+s*.9,y-s*.3,x,y+s*.3);
-    ctx.fill();
-  }
-  function step(){
-    ctx.clearRect(0,0,W,H);
-    for(let i=0;i<3;i++) ps.push(flame());
-    if(Math.random()<.13) ps.push(heart());
-    ctx.globalCompositeOperation = 'lighter';
-    ps = ps.filter(p => {
-      p.t++; if(p.t >= p.life) return false;
-      const k = p.t/p.life;
-      p.y += p.vy;
-      p.x += p.h ? Math.sin(p.t/16+p.ph)*.9 : p.vx + Math.sin(p.t/7+p.x)*.4;
-      if(p.h){
-        ctx.shadowColor = 'hsl('+(p.hue+8)+',100%,55%)'; ctx.shadowBlur = 14;
-        ctx.fillStyle = 'hsla('+p.hue+',100%,'+(52+k*10)+'%,'+(1-k*k)+')';
-        drawHeart(p.x,p.y,p.r*(1+.15*Math.sin(p.t/5)));
-        ctx.shadowBlur = 0;
-      } else {
-        const r = p.r*(1-k*.7), hue = 55-50*k, a = (1-k)*.55;
-        const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r);
-        g.addColorStop(0,'hsla('+hue+',100%,60%,'+a+')');
-        g.addColorStop(1,'hsla('+(hue-15)+',100%,45%,0)');
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x,p.y,r,0,6.3); ctx.fill();
-      }
-      return true;
-    });
-    ctx.globalCompositeOperation = 'source-over';
-    raf = requestAnimationFrame(step);
-  }
-  return {
-    start(){ if(still || raf) return; size(); ps = []; raf = requestAnimationFrame(step); },
-    stop(){ cancelAnimationFrame(raf); raf = 0; }
-  };
-})();
 
 /* ============ PESERTA PELATIHAN (teks berjalan) ============ */
 // Urutan: gelar tertinggi dulu (Doktor → Magister → Sarjana),
@@ -1391,7 +1326,6 @@ const closeModal = () => {
   overlay.classList.remove('show');
   document.body.style.overflow = '';
   logoBar.classList.add('reveal');
-  setTimeout(Fire.stop, 400);
 };
 document.getElementById('modalClose').addEventListener('click', closeModal);
 overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
@@ -1399,7 +1333,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal();
 
 window.addEventListener('load', () => {
   document.body.style.overflow = 'hidden';
-  requestAnimationFrame(() => { overlay.classList.add('show'); Fire.start(); });
+  requestAnimationFrame(() => overlay.classList.add('show'));
 });
 
 /* ============ 2. SEGMENTED CONTROLS (liquid glass) ============ */
