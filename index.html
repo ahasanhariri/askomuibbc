@@ -1701,13 +1701,13 @@ function updateAcaCountdown(){
     statusText = 'Menuju pelaksanaan ACA';
   } else if(now < ACA_BREAK_START){
     live = true;
-    statusText = 'Asesmen sedang berlangsung sekarang';
+    statusText = 'Asesmen selesai';
   } else if(now < ACA_BREAK_END){
     live = true;
     statusText = 'Istirahat (11.30 - 13.00)';
   } else if(now <= ACA_END){
     live = true;
-    statusText = 'Asesmen sedang berlangsung sekarang';
+    statusText = 'Asesmen selesai';
   } else {
     live = false;
     diff = 0;
