@@ -870,7 +870,7 @@ body{
     <p class="modal-subtitle">Jumat, 25 September 2026</p>
     <p class="modal-sub" id="acaModalSub">Menghitung mundur&hellip;</p>
     <div class="countdown modal-countdown" id="acaModalCountdown">
-      <div class="cd-unit"><div class="cd-digits" id="acaModalCdD"></div><div class="cd-label">Hari</div></div>
+      <div class="cd-unit" id="acaModalCdDUnit"><div class="cd-digits" id="acaModalCdD"></div><div class="cd-label">Hari</div></div>
       <div class="cd-unit"><div class="cd-digits" id="acaModalCdH"></div><div class="cd-label">Jam</div></div>
       <div class="cd-unit"><div class="cd-digits" id="acaModalCdM"></div><div class="cd-label">Menit</div></div>
       <div class="cd-unit"><div class="cd-digits" id="acaModalCdS"></div><div class="cd-label">Detik</div></div>
@@ -917,7 +917,7 @@ body{
     <div class="hero-cd-wrap">
       <span class="hero-cd-label" id="heroAcaLabel">Countdown Asesmen Calon Asesor</span>
       <div class="countdown" id="heroAcaCountdown">
-        <div class="cd-unit"><div class="cd-digits" id="heroCdD"></div><div class="cd-label">Hari</div></div>
+        <div class="cd-unit" id="heroCdDUnit"><div class="cd-digits" id="heroCdD"></div><div class="cd-label">Hari</div></div>
         <div class="cd-unit"><div class="cd-digits" id="heroCdH"></div><div class="cd-label">Jam</div></div>
         <div class="cd-unit"><div class="cd-digits" id="heroCdM"></div><div class="cd-label">Menit</div></div>
         <div class="cd-unit"><div class="cd-digits" id="heroCdS"></div><div class="cd-label">Detik</div></div>
@@ -1635,6 +1635,8 @@ setInterval(updateMiniCountdown, 1000);
 
 /* ---- Countdown Asesmen Calon Asesor (ACA) - hero + popup + jam real-time ---- */
 const ACA_START = new Date('2026-09-25T08:00:00+07:00').getTime();
+const ACA_BREAK_START = new Date('2026-09-25T11:30:00+07:00').getTime();
+const ACA_BREAK_END   = new Date('2026-09-25T13:00:00+07:00').getTime();
 const ACA_END   = new Date('2026-09-25T16:00:00+07:00').getTime();
 const ACA_DATE_KEY = '2026-09-25';
 
@@ -1678,21 +1680,49 @@ function acaRenderCountdown(prefix, diffMs){
 function acaJakartaDateKey(now){
   return new Intl.DateTimeFormat('en-CA', {timeZone:'Asia/Jakarta', year:'numeric', month:'2-digit', day:'2-digit'}).format(now);
 }
+function acaSetDayUnitVisible(prefix, visible){
+  const unit = document.getElementById(prefix + 'CdDUnit');
+  if(unit) unit.style.display = visible ? '' : 'none';
+}
+function acaRenderClock(prefix){
+  const parts = new Intl.DateTimeFormat('en-GB', {timeZone:'Asia/Jakarta', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false}).formatToParts(new Date());
+  const get = (t) => (parts.find(p => p.type === t) || {}).value || '00';
+  acaSetDayUnitVisible(prefix, false);
+  acaUpdateDigits(document.getElementById(prefix + 'CdH'), get('hour'));
+  acaUpdateDigits(document.getElementById(prefix + 'CdM'), get('minute'));
+  acaUpdateDigits(document.getElementById(prefix + 'CdS'), get('second'));
+}
 function updateAcaCountdown(){
   const now = Date.now();
-  let diff, statusText;
+  let live, diff, statusText;
   if(now < ACA_START){
+    live = false;
     diff = ACA_START - now;
     statusText = 'Menuju pelaksanaan ACA';
+  } else if(now < ACA_BREAK_START){
+    live = true;
+    statusText = 'Asesmen sedang berlangsung sekarang';
+  } else if(now < ACA_BREAK_END){
+    live = true;
+    statusText = 'Istirahat (11.30 - 13.00)';
   } else if(now <= ACA_END){
-    diff = 0;
+    live = true;
     statusText = 'Asesmen sedang berlangsung sekarang';
   } else {
+    live = false;
     diff = 0;
     statusText = 'Asesmen Calon Asesor telah selesai';
   }
-  acaRenderCountdown('hero', diff);
-  acaRenderCountdown('acaModal', diff);
+
+  if(live){
+    acaRenderClock('hero');
+    acaRenderClock('acaModal');
+  } else {
+    acaSetDayUnitVisible('hero', true);
+    acaSetDayUnitVisible('acaModal', true);
+    acaRenderCountdown('hero', diff);
+    acaRenderCountdown('acaModal', diff);
+  }
 
   const heroLabel = document.getElementById('heroAcaLabel');
   if(heroLabel) heroLabel.textContent = now < ACA_START ? 'Countdown Asesmen Calon Asesor' : statusText;
